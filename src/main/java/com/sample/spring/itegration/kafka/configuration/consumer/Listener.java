@@ -14,7 +14,7 @@ public class Listener {
 
   private final CountDownLatch latch1 = new CountDownLatch(1);
 
-  @KafkaListener(topics = "someTopic", id = "tpd-loggers")
+  @KafkaListener(topics = "topic1", id = "tpd-loggers")
   public void listen(Object message) {
     System.out.println("Received message : " + message);
     this.latch1.countDown();

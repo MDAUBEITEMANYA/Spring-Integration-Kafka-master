@@ -66,5 +66,4 @@ public class ConsumingChannelConfig {
 
     return props;
   }
-
 }
