@@ -1,11 +1,9 @@
 package com.kafka.configuration.consumer;
 
-
 import com.kafka.configuration.producer.Item;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,17 +20,6 @@ public class ConsumingChannelConfig {
     @Autowired
     private KafkaProperties kafkaProperties;
 
-    @Value("${kafka.bootstrap.servers}")
-    private String bootstrapServers;
-
-    @Value("${kafka.topic.test1}")
-    private String springIntegrationKafkaTopic;
-
-    @Value("${kafka.conumer.group.id}")
-    private String consumerGroupId;
-
-    @Value("${kafka.auto.offset.rest.conf}")
-    private String autoOffsetResetConfiguration;
 
     @Bean
     ConcurrentKafkaListenerContainerFactory<String, Item> kafkaListenerContainerFactory() {
@@ -48,7 +35,6 @@ public class ConsumingChannelConfig {
                 kafkaProperties.buildConsumerProperties(), new StringDeserializer(), jsonDeserializer
         );
     }
-
 
     @Bean
     public Map<String, Object> consumerConfigs() {

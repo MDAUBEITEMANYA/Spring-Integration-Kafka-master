@@ -3,7 +3,6 @@ package com.kafka.configuration.producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,9 +17,6 @@ import java.util.Map;
 @Configuration
 public class ProducingChannelConfig {
 
-    @Value("${kafka.bootstrap.servers}")
-    private String bootstrapServers;
-
     @Autowired
     private KafkaProperties kafkaProperties;
 
@@ -28,7 +24,6 @@ public class ProducingChannelConfig {
     public ProducerFactory<String, Item> producerFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
-
 
     @Bean
     public Map<String, Object> producerConfigs() {
@@ -40,7 +35,6 @@ public class ProducingChannelConfig {
                 JsonSerializer.class);
         return props;
     }
-
 
     @Bean
     public KafkaTemplate<String, Item> kafkaTemplate() {
