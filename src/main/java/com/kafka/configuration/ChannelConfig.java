@@ -1,5 +1,6 @@
-package com.kafka.configuration.producer;
+package com.kafka.configuration;
 
+import com.kafka.configuration.producer.Item;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class ProducingChannelConfig {
-
+public class ChannelConfig {
     @Autowired
     private KafkaProperties kafkaProperties;
 

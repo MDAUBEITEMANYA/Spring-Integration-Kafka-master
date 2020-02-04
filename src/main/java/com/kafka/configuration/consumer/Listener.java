@@ -17,12 +17,11 @@ public class Listener {
     @Autowired
     private KafkaTemplate<String, Item> template;
 
-    @KafkaListener(topics = "some11", id = "tpd-loggers")
+    @KafkaListener(topics = "la", id = "tpd-loggers")
     public void consume(Item item) {
+        item.setTimestamp(System.currentTimeMillis());
         System.out.println("Consumed Message :" + item);
         LAST_ITEM = item;
-        System.out.println(item.toString());
-        template.send(configProperties.getTopic2(), 0, System.currentTimeMillis(), String.valueOf(1), item);
+        template.send(configProperties.getTopic2(), 0, String.valueOf(1), item);
     }
-
 }

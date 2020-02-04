@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "kafka")
 public class ConfigProperties {
     private String bootstrap = "localhost:9092";
-    private String topic1 = "some";
-    private String topic2 = "some2";
+    private String topic1 = "la";
+    private String topic2 = "lala";
     private String group = "conGroup1";
     private String offset = "earliest";
 
