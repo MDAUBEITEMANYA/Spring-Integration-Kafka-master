@@ -9,23 +9,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.core.DefaultKafkaProducerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.integration.dsl.IntegrationFlow;
+import org.springframework.integration.dsl.IntegrationFlows;
+import org.springframework.integration.dsl.kafka.Kafka;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.core.*;
+import org.springframework.kafka.support.DefaultKafkaHeaderMapper;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
-import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
-import org.springframework.kafka.core.ConsumerFactory;
-
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
 public class ChannelConfig {
+
     @Autowired
     private KafkaProperties kafkaProperties;
+
 
     @Bean
     public ProducerFactory<String, Item> producerFactory() {
@@ -78,4 +79,20 @@ public class ChannelConfig {
 
         return props;
     }
+
+
+    @Bean
+    public IntegrationFlow someFlow() {
+        return IntegrationFlows
+                .from(Kafka.messageDrivenChannelAdapter(consumerFactory(), "la"))
+                .channel("lala")
+                .get();
+    }
+
+
+    @Bean
+    public DefaultKafkaHeaderMapper mapper() {
+        return new DefaultKafkaHeaderMapper();
+    }
+
 }

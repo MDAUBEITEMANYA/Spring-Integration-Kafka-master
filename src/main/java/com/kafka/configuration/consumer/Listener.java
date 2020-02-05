@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class Listener {
     public static Item LAST_ITEM;
+
     @Autowired
     ConfigProperties configProperties;
 
