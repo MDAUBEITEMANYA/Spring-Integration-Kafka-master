@@ -1,6 +1,7 @@
 package com.kafka.configuration;
 
 import com.kafka.configuration.producer.Item;
+import com.kafka.configuration.service.SomeServiceImpl;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -13,8 +14,10 @@ import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.kafka.dsl.Kafka;
-import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
-import org.springframework.kafka.core.*;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.DefaultKafkaHeaderMapper;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
@@ -28,7 +31,8 @@ public class ChannelConfig {
 
     @Autowired
     private KafkaProperties kafkaProperties;
-
+    @Autowired
+    private SomeServiceImpl someService;
 
     @Bean
     public ProducerFactory<String, Item> producerFactory() {
@@ -51,22 +55,6 @@ public class ChannelConfig {
         return new KafkaTemplate<>(producerFactory());
     }
 
-
-    @Bean
-    ConcurrentKafkaListenerContainerFactory<String, Item> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, Item> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory());
-        return factory;
-    }
-
-    @Bean
-    public ConsumerFactory<String, Item> consumerFactory() {
-        final JsonDeserializer<Item> jsonDeserializer = new JsonDeserializer<>(Item.class);
-        return new DefaultKafkaConsumerFactory<>(
-                kafkaProperties.buildConsumerProperties(), new StringDeserializer(), jsonDeserializer
-        );
-    }
-
     @Bean
     public Map<String, Object> consumerConfigs() {
         Map<String, Object> props = new HashMap<>(
@@ -76,19 +64,20 @@ public class ChannelConfig {
                 StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
                 JsonDeserializer.class);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG,
-                "tpd-loggers");
 
         return props;
     }
 
-
     @Bean
-    public IntegrationFlow someFlow() {
+    IntegrationFlow inboundKafkaEventFlow() {
         return IntegrationFlows
-                .from(Kafka.messageDrivenChannelAdapter(consumerFactory(), "la"))
-                .channel("lala")
+                .from((Kafka.messageDrivenChannelAdapter(new DefaultKafkaConsumerFactory<>(kafkaProperties.buildConsumerProperties(), new StringDeserializer(),
+                        new JsonDeserializer<>(Item.class)), "la")))
+                .handle(this.someService)
+                .handle(Kafka.outboundChannelAdapter(new DefaultKafkaProducerFactory<>(kafkaProperties.buildProducerProperties(), new StringSerializer(),
+                        new JsonSerializer<>())).topic("lala"))
                 .get();
+
     }
 
 
@@ -98,3 +87,4 @@ public class ChannelConfig {
     }
 
 }
+
